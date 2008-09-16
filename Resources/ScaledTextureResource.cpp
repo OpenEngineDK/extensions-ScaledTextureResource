@@ -8,6 +8,7 @@
 //--------------------------------------------------------------------
 
 #include <Resources/ScaledTextureResource.h>
+#include <cmath>
 
 #include <Logging/Logger.h>
 
@@ -22,12 +23,22 @@ void ScaledTextureResource::Load() {
     if (loaded) return;
     originalResource->Load();
 
-    width = originalResource->GetWidth() / scale;
-    height = originalResource->GetHeight() / scale;
+    unsigned int scalex = scale, scaley = scale;
+
+    // @todo: test that width, height % scale != 0 works
+    if (originalResource->GetWidth() % scalex != 0 ||
+        originalResource->GetHeight() % scaley != 0) {
+        logger.warning << "scaled texture cannot be divided with scaling factor";
+        logger.warning << logger.end;
+    }
+
+    width = originalResource->GetWidth() / scalex;
+    height = originalResource->GetHeight() / scaley;
     depth = originalResource->GetDepth();
     unsigned int numberOfCharsPerColor = (depth/8);
     unsigned int size = width * height * numberOfCharsPerColor;
-
+    
+    /*
     logger.info << "from:[ ";
     logger.info << "h: " << originalResource->GetHeight();
     logger.info << " w: " << originalResource->GetWidth();
@@ -41,26 +52,32 @@ void ScaledTextureResource::Load() {
     logger.info << " d: " << depth;
     logger.info << " s: " << size;
     logger.info << "]" << logger.end;
-
+    */
     data = new unsigned char[size];
 
     unsigned char* originalData = originalResource->GetData();
 
-    for (unsigned int i=0,j=0; i<size; 
-         i+=numberOfCharsPerColor,j+=scale*numberOfCharsPerColor) {
-        for(unsigned int k=0; k<numberOfCharsPerColor; k++) {
-            /*
-            logger.info << "copying - from: " << j+k;
-            logger.info << " to: " << i+k;
-            logger.info << " |  j: " << j;
-            logger.info << " i: " << i;
-            logger.info << " k: " << k;
-            logger.info << logger.end;
-            */
-            data[i+k] = originalData[j+k];           
-        }
+    for (int y=0, j=0; y<height;
+         y++, j+=scaley) {
+            
+        for (unsigned int x=0,i=0; x<width*numberOfCharsPerColor;
+             x+=numberOfCharsPerColor,i+=scalex*numberOfCharsPerColor) {
 
-        //if (i==65) exit(1);
+            for(unsigned int k=0; k<numberOfCharsPerColor; k++) {
+                /*
+                logger.info << "copying - from: " << i+k + j*scaley*originalResource->GetWidth();
+                logger.info << " to: " << x+k + y*scaley*width;
+                logger.info << " |  x: " << x;
+                logger.info << " y: " << y;
+                logger.info << " i: " << i;
+                logger.info << " j: " << j;
+                logger.info << " k: " << k;
+                logger.info << logger.end;
+*/
+                data[x+k + y*width*numberOfCharsPerColor] = 
+                    originalData[i+k + j*originalResource->GetWidth()*numberOfCharsPerColor];
+            }
+        }
     }
 
     loaded = true;
