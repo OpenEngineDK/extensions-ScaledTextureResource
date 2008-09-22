@@ -32,11 +32,11 @@ private:
     bool loaded;
     int id;                     //!< material identifier
     unsigned char* data;        //!< binary material data
-    int width;                  //!< texture width
-    int height;                 //!< texture height
-    int depth;                  //!< texture depth/bits
+    unsigned int width;         //!< texture width
+    unsigned int height;        //!< texture height
+    unsigned int depth;         //!< texture depth/bits
     unsigned int scale;
-    //@todo: width, height and depth should be unsigned
+    ColorFormat colorFormat;
 
 public:
 
@@ -66,9 +66,10 @@ public:
     // texture resource methods
 	int GetID();
 	void SetID(int id);   
-    int GetWidth();
-	int GetHeight();
-	int GetDepth();
+    unsigned int GetWidth();
+	unsigned int GetHeight();
+	unsigned int GetDepth();
+    ColorFormat GetColorFormat();
 	unsigned char* GetData();
 
 };

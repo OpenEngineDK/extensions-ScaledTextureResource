@@ -35,6 +35,7 @@ void ScaledTextureResource::Load() {
     width = originalResource->GetWidth() / scalex;
     height = originalResource->GetHeight() / scaley;
     depth = originalResource->GetDepth();
+    colorFormat = originalResource->GetColorFormat();
     unsigned int numberOfCharsPerColor = (depth/8);
     unsigned int size = width * height * numberOfCharsPerColor;
     
@@ -57,7 +58,7 @@ void ScaledTextureResource::Load() {
 
     unsigned char* originalData = originalResource->GetData();
 
-    for (int y=0, j=0; y<height;
+    for (unsigned int y=0, j=0; y<height;
          y++, j+=scaley) {
             
         for (unsigned int x=0,i=0; x<width*numberOfCharsPerColor;
@@ -98,16 +99,20 @@ void ScaledTextureResource::SetID(int id){
     this->id = id;
 }
 
-int ScaledTextureResource::GetWidth(){
+unsigned int ScaledTextureResource::GetWidth(){
     return width;
 }
 
-int ScaledTextureResource::GetHeight(){
+unsigned int ScaledTextureResource::GetHeight(){
     return height;
 }
 
-int ScaledTextureResource::GetDepth(){
+unsigned int ScaledTextureResource::GetDepth(){
     return depth;
+}
+
+ColorFormat ScaledTextureResource::GetColorFormat() {
+    return colorFormat;
 }
 
 unsigned char* ScaledTextureResource::GetData(){
