@@ -22,9 +22,9 @@ namespace Resources {
 using namespace std;
 
 /**
- * TGA image resource.
+ * Scaled texture resource.
  *
- * @class TGAResource TGAResource.h Resources/TGAResource.h
+ * @class ScaledTextureResource ScaledTextureResource.h Resources/ScaledTextureResource.h
  */
 class ScaledTextureResource : public ITextureResource {
 private:
