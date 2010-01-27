@@ -29,13 +29,7 @@ using namespace std;
 class ScaledTextureResource : public ITextureResource {
 private:
     ITextureResourcePtr originalResource;
-    bool loaded;
-    int id;                     //!< material identifier
-    unsigned char* data;        //!< binary material data
-    unsigned int width;         //!< texture width
-    unsigned int height;        //!< texture height
     unsigned int scale;
-    ColorFormat colorFormat;
 
 public:
 
@@ -46,9 +40,8 @@ public:
      * @param scale number of pixels to skip.
      */
     ScaledTextureResource(ITextureResourcePtr resource, unsigned int scale)
-        : originalResource(resource), loaded(false), data(NULL), scale(scale) {
-        width = height = id = 0;
-    };
+        : ITextureResource(), 
+          originalResource(resource), scale(scale) {}
 
     //friend class boost::serialization::access;
     template<class Archive>
@@ -61,14 +54,6 @@ public:
     // resource methods
     void Load();
     void Unload();
-
-    // texture resource methods
-	int GetID();
-	void SetID(int id);   
-    unsigned int GetWidth();
-	unsigned int GetHeight();
-    ColorFormat GetColorFormat();
-	unsigned char* GetData();
 
 };
 

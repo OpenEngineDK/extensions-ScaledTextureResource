@@ -20,7 +20,7 @@ ScaledTextureResource::~ScaledTextureResource() {
 }
 
 void ScaledTextureResource::Load() {
-    if (loaded) return;
+    if (this->data) return;
     originalResource->Load();
 
     this->channels = originalResource->GetChannels();
@@ -34,60 +34,35 @@ void ScaledTextureResource::Load() {
         logger.warning << logger.end;
     }
 
-    width = originalResource->GetWidth() / scalex;
-    height = originalResource->GetHeight() / scaley;
-    colorFormat = originalResource->GetColorFormat();
-    unsigned int size = width * height * this->channels;
+    this->width = originalResource->GetWidth() / scalex;
+    this->height = originalResource->GetHeight() / scaley;
+    this->format = originalResource->GetColorFormat();
+    unsigned int size = this->width * this->height * this->channels;
     
-    data = new unsigned char[size];
+    this->data = new unsigned char[size];
 
     unsigned char* originalData = originalResource->GetData();
 
-    for (unsigned int y=0, j=0; y<height;
+    for (unsigned int y=0, j=0; y<this->height;
          y++, j+=scaley) {
             
-        for (unsigned int x=0,i=0; x<width*this->channels;
+        for (unsigned int x=0,i=0; x<this->width*this->channels;
              x+=this->channels,i+=scalex*this->channels) {
 
             for(unsigned int k=0; k<this->channels; k++) {
-                data[x+k + y*width*this->channels] = 
+                this->data[x+k + y*this->width*this->channels] = 
                     originalData[i+k + j*originalResource->GetWidth()*this->channels];
             }
         }
     }
-
-    loaded = true;
 }
 
 void ScaledTextureResource::Unload() {
-    if (loaded) {
-        delete[] data;
-        loaded = false;
+    originalResource->Unload();
+    if (this->data) {
+        delete[] this->data;
+        this->data = NULL;
     }
-}
-
-int ScaledTextureResource::GetID(){
-    return id;
-}
-
-void ScaledTextureResource::SetID(int id){
-    this->id = id;
-}
-
-unsigned int ScaledTextureResource::GetWidth(){
-    return width;
-}
-
-unsigned int ScaledTextureResource::GetHeight(){
-    return height;
-}
-
-ColorFormat ScaledTextureResource::GetColorFormat() {
-    return colorFormat;
-}
-
-unsigned char* ScaledTextureResource::GetData(){
-    return data;
 }
 
 } //NS Resources
