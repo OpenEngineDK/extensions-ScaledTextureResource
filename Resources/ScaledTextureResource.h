@@ -34,7 +34,6 @@ private:
     unsigned char* data;        //!< binary material data
     unsigned int width;         //!< texture width
     unsigned int height;        //!< texture height
-    unsigned int depth;         //!< texture depth/bits
     unsigned int scale;
     ColorFormat colorFormat;
 
@@ -48,7 +47,7 @@ public:
      */
     ScaledTextureResource(ITextureResourcePtr resource, unsigned int scale)
         : originalResource(resource), loaded(false), data(NULL), scale(scale) {
-        width = height = depth = id = 0;
+        width = height = id = 0;
     };
 
     //friend class boost::serialization::access;
@@ -68,7 +67,6 @@ public:
 	void SetID(int id);   
     unsigned int GetWidth();
 	unsigned int GetHeight();
-	unsigned int GetDepth();
     ColorFormat GetColorFormat();
 	unsigned char* GetData();
 

@@ -23,6 +23,8 @@ void ScaledTextureResource::Load() {
     if (loaded) return;
     originalResource->Load();
 
+    this->channels = originalResource->GetChannels();
+
     unsigned int scalex = scale, scaley = scale;
 
     // @todo: test that width, height % scale != 0 works
@@ -34,26 +36,9 @@ void ScaledTextureResource::Load() {
 
     width = originalResource->GetWidth() / scalex;
     height = originalResource->GetHeight() / scaley;
-    depth = originalResource->GetDepth();
     colorFormat = originalResource->GetColorFormat();
-    unsigned int numberOfCharsPerColor = (depth/8);
-    unsigned int size = width * height * numberOfCharsPerColor;
+    unsigned int size = width * height * this->channels;
     
-    /*
-    logger.info << "from:[ ";
-    logger.info << "h: " << originalResource->GetHeight();
-    logger.info << " w: " << originalResource->GetWidth();
-    logger.info << " d: " << originalResource->GetDepth();
-    logger.info << " s: " << originalResource->GetHeight()*originalResource->GetWidth()*originalResource->GetDepth();
-    logger.info << "]" << logger.end;
-
-    logger.info << "to:[ ";
-    logger.info << "h: " << height;
-    logger.info << " w: " << width;
-    logger.info << " d: " << depth;
-    logger.info << " s: " << size;
-    logger.info << "]" << logger.end;
-    */
     data = new unsigned char[size];
 
     unsigned char* originalData = originalResource->GetData();
@@ -61,22 +46,12 @@ void ScaledTextureResource::Load() {
     for (unsigned int y=0, j=0; y<height;
          y++, j+=scaley) {
             
-        for (unsigned int x=0,i=0; x<width*numberOfCharsPerColor;
-             x+=numberOfCharsPerColor,i+=scalex*numberOfCharsPerColor) {
+        for (unsigned int x=0,i=0; x<width*this->channels;
+             x+=this->channels,i+=scalex*this->channels) {
 
-            for(unsigned int k=0; k<numberOfCharsPerColor; k++) {
-                /*
-                logger.info << "copying - from: " << i+k + j*scaley*originalResource->GetWidth();
-                logger.info << " to: " << x+k + y*scaley*width;
-                logger.info << " |  x: " << x;
-                logger.info << " y: " << y;
-                logger.info << " i: " << i;
-                logger.info << " j: " << j;
-                logger.info << " k: " << k;
-                logger.info << logger.end;
-*/
-                data[x+k + y*width*numberOfCharsPerColor] = 
-                    originalData[i+k + j*originalResource->GetWidth()*numberOfCharsPerColor];
+            for(unsigned int k=0; k<this->channels; k++) {
+                data[x+k + y*width*this->channels] = 
+                    originalData[i+k + j*originalResource->GetWidth()*this->channels];
             }
         }
     }
@@ -105,10 +80,6 @@ unsigned int ScaledTextureResource::GetWidth(){
 
 unsigned int ScaledTextureResource::GetHeight(){
     return height;
-}
-
-unsigned int ScaledTextureResource::GetDepth(){
-    return depth;
 }
 
 ColorFormat ScaledTextureResource::GetColorFormat() {
